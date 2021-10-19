@@ -12,7 +12,7 @@ const userCtrl = {  register: async (req, res) =>{
         if(password.length < 6) 
             return res.status(400).json({msg: "Senha em que ser acima de 6."})
 
-        // criptograar senha
+        // criptografar senha
         const passwordHash = await bcrypt.hash(password, 10)
         const newUser = new Users({
             name, email, password: passwordHash
@@ -63,7 +63,33 @@ login: async (req, res) =>{
     } catch (err) {
         return res.status(500).json({msg: err.message})
     }
-}
+},
+logout: async (req, res) =>{
+    try {
+        res.clearCookie('refreshtoken', {path: '/user/refresh_token'})
+        return res.json({msg: "Deslogado"})
+    } catch (err) {
+        return res.status(500).json({msg: err.message})
+    }
+},
+refreshToken: (req, res) =>{
+    try {
+        const rf_token = req.cookies.refreshtoken;
+        if(!rf_token) return res.status(400).json({msg: "Por favor se logue ou se registre"})
+
+        jwt.verify(rf_token, process.env.REFRESH_TOKEN_SECRET, (err, user) =>{
+            if(err) return res.status(400).json({msg: "Por favor se logue ou se registre"})
+
+            const accesstoken = createAccessToken({id: user.id})
+
+            res.json({accesstoken})
+        })
+
+    } catch (err) {
+        return res.status(500).json({msg: err.message})
+    }
+    
+},
 }
 const createAccessToken = (user) =>{
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '11m'})
