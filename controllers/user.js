@@ -7,10 +7,10 @@ const userCtrl = {  register: async (req, res) =>{
         const {name, email, password} = req.body;
 
         const user = await Users.findOne({email})
-        if(user) return res.status(400).json({msg: "O email já existe."})
+        if(user) return res.status(400).json({msg: "O email já existe."});
 
         if(password.length < 6) 
-            return res.status(400).json({msg: "Senha em que ser acima de 6."})
+            return res.status(400).json({msg: "Senha em que ser acima de 6."});
 
         // criptografar senha
         const passwordHash = await bcrypt.hash(password, 10)
