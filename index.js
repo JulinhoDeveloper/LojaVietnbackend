@@ -18,6 +18,7 @@ app.use(fileUpload({
 
 app.use('/user', require('./routes/user'));
 app.use('/api', require('./routes/category'));
+app.use('/api', require('./routes/upload'));
 
 
 
